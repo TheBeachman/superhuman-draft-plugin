@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  LaunchAgent: auto-starts Superhuman with remote debugging on login.
+  Install: cp com.beachman.superhuman-debug.plist ~/Library/LaunchAgents/
+           launchctl load ~/Library/LaunchAgents/com.beachman.superhuman-debug.plist
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.beachman.superhuman-debug</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Applications/Superhuman.app/Contents/MacOS/Superhuman</string>
+    <string>--remote-debugging-port=9250</string>
+  </array>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>KeepAlive</key>
+  <false/>
+
+  <key>StandardOutPath</key>
+  <string>/tmp/superhuman-debug.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>/tmp/superhuman-debug.log</string>
+</dict>
+</plist>

@@ -1,0 +1,12 @@
+{
+  "name": "superhuman-draft",
+  "description": "Draft and review emails in Superhuman (with attachment support) via Claude Code",
+  "version": "1.0.0",
+  "author": {
+    "name": "Beachman Motor Company",
+    "email": "ben@beachman.ca"
+  },
+  "homepage": "https://github.com/TheBeachman/superhuman-draft-plugin",
+  "repository": "https://github.com/TheBeachman/superhuman-draft-plugin",
+  "license": "MIT"
+}
