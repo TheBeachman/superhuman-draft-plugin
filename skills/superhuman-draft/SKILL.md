@@ -7,7 +7,7 @@ description: >
   want to review before sending, or need to attach a file from Google Drive.
 ---
 
-You are composing an email draft in Superhuman using the `superhuman` CLI tool.
+You are composing an email draft in Superhuman using the `superhuman-draft` wrapper tool.
 Drafts land in the Superhuman drafts folder on all devices — NOT in Gmail drafts.
 
 ## Step 1: Check Superhuman is running
@@ -24,17 +24,22 @@ Do NOT proceed if the status check fails.
 From the user's request, identify:
 - **to**: recipient email address (required)
 - **subject**: subject line (required)
-- **body**: email body — write this in Ben's voice: direct, warm, brief. Sign off as "Cheers, Ben"
+- **body**: email body — write in the user's voice based on their CLAUDE.md or memory context. If no voice context is available, write professionally and concisely.
 - **attach**: local file path(s) if any attachments are needed (optional)
 
-For files in Google Drive, the local path is: `/Users/[username]/Google Drive/My Drive/...`
-You can use Glob or Bash `find` to locate the file if the exact path is unclear.
+To find the user's Superhuman account email, run:
+```bash
+superhuman account list
+```
+
+For files in Google Drive, the local synced path is typically: `~/Google Drive/My Drive/...`
+Use Glob or Bash `find` to locate a file if the exact path is unclear.
 Multiple attachments: use `--attach` once per file.
 
 ## Step 3: Create the draft
 
 ```bash
-superhuman draft create \
+superhuman-draft draft create \
   --account "ACCOUNT_EMAIL" \
   --to "RECIPIENT" \
   --subject "SUBJECT" \
@@ -43,42 +48,42 @@ superhuman draft create \
 ```
 
 Replace placeholders with actual values. Use `--attach` only if there are attachments.
+`superhuman-draft` handles all attachment uploading correctly — use it instead of `superhuman` directly.
 
 ## Step 4: Confirm to the user
 
 Report back:
-- Draft ID
-- Recipient, subject
-- Whether attachments were included
-- That it's sitting in Superhuman drafts ready for review
+- Recipient and subject
+- Whether attachments were included and their filenames
+- That the draft is in Superhuman ready for review
 
-**Never send the email automatically** unless the user explicitly says "send it" or "send now".
+**Never send automatically** unless the user explicitly says "send it" or "send now".
 
 ## Examples
 
 **Simple draft:**
 ```bash
-superhuman draft create \
-  --account "ben@beachman.ca" \
-  --to "investor@example.com" \
-  --subject "Beachman Series A — Follow Up" \
-  --body "Hi John, great meeting you yesterday. I've attached our investor deck for your review. Let me know if you have any questions.\n\nCheers,\nBen"
+superhuman-draft draft create \
+  --account "user@example.com" \
+  --to "recipient@example.com" \
+  --subject "Following up" \
+  --body "Hi John, great meeting you. Let me know if you have questions."
 ```
 
-**Draft with attachment from Google Drive:**
+**Draft with attachment:**
 ```bash
-superhuman draft create \
-  --account "ben@beachman.ca" \
+superhuman-draft draft create \
+  --account "user@example.com" \
   --to "jacqueline@example.com" \
   --subject "Your Employment Agreement" \
-  --body "Hi Jackie, please find your employment agreement attached. Let me know if you have any questions!\n\nCheers,\nBen" \
-  --attach "/Users/ben/Google Drive/My Drive/Beachman/HR/Employees/Active Employees/Jacqueline Vandervaart/Beachman Employment Agreement [Jacqueline Vandervaart].pdf"
+  --body "Hi Jackie, please find your employment agreement attached!" \
+  --attach "/Users/username/Google Drive/My Drive/HR/jackie_agreement.pdf"
 ```
 
 **Multiple attachments:**
 ```bash
-superhuman draft create \
-  --account "ben@beachman.ca" \
+superhuman-draft draft create \
+  --account "user@example.com" \
   --to "partner@example.com" \
   --subject "Beachman Docs" \
   --body "See attached." \
@@ -88,7 +93,7 @@ superhuman draft create \
 
 ## Notes
 
-- The `superhuman` binary must be installed at `~/.bun/bin/superhuman` (handled by `setup.sh`)
+- Always use `superhuman-draft` (not `superhuman`) for draft creation — it fixes a token bug in the underlying binary that causes attachments to silently fail
+- `superhuman` can still be used directly for all other commands (inbox, search, read, etc.)
 - Tokens are cached at `~/.config/superhuman-cli/tokens.json` — run `superhuman account auth` if expired
 - Superhuman must be open and running with remote debugging enabled (port 9250)
-- The `--account` flag should match the email address shown by `superhuman account list`

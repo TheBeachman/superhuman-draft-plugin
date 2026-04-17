@@ -2,7 +2,7 @@
 
 Draft emails in **Superhuman** (not Gmail) directly from Claude Code — with full attachment support. Drafts land in your Superhuman drafts folder on all devices for review before sending.
 
-> Built for Beachman Motor Company staff.
+> Built by Beachman Motor Company — free to use for anyone with a Superhuman account.
 
 ---
 
@@ -14,7 +14,7 @@ Superhuman and Gmail **do not sync drafts**. If Claude creates a draft in Gmail,
 
 ## Requirements
 
-- macOS (Apple Silicon / ARM64)
+- **macOS on Apple Silicon only** (M1/M2/M3/M4). The bundled `superhuman-cli` binary is ARM64. Intel Mac users will need to build [`edwinhu/superhuman-cli`](https://github.com/edwinhu/superhuman-cli) from source.
 - [Superhuman](https://superhuman.com) desktop app installed
 - [Bun](https://bun.sh) runtime (installed automatically by `setup.sh` if missing)
 - Claude Code
@@ -26,7 +26,7 @@ Superhuman and Gmail **do not sync drafts**. If Claude creates a draft in Gmail,
 ### 1. Run setup
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/TheBeachman/superhuman-draft-plugin/main/setup.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/TheBeachman/superhuman-draft-plugin/master/setup.sh)
 ```
 
 This will:
@@ -37,11 +37,21 @@ This will:
 
 ### 2. Install the Claude Code plugin
 
-In Claude Code, run:
+In Claude Code, add the marketplace and install the plugin:
 
 ```
-/plugin install https://github.com/TheBeachman/superhuman-draft-plugin
+/plugin marketplace add TheBeachman/superhuman-draft-plugin
+/plugin install superhuman-draft@superhuman-draft-plugin
 ```
+
+> **For friends without a Beachman setup / or if `/plugin` gives you trouble:**
+> You can skip the marketplace and install as a standalone skill:
+> ```bash
+> git clone https://github.com/TheBeachman/superhuman-draft-plugin
+> mkdir -p ~/.claude/skills
+> cp -r superhuman-draft-plugin/skills/superhuman-draft ~/.claude/skills/
+> ```
+> Then invoke as `/superhuman-draft` (unnamespaced) in Claude Code.
 
 ### 3. (Recommended) Auto-start Superhuman with debugging
 

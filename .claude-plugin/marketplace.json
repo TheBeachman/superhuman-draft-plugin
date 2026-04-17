@@ -1,0 +1,12 @@
+{
+  "name": "superhuman-draft-plugin",
+  "owner": { "name": "TheBeachman" },
+  "plugins": [
+    {
+      "name": "superhuman-draft",
+      "source": ".",
+      "description": "Draft emails in Superhuman with attachment support",
+      "version": "1.0.0"
+    }
+  ]
+}

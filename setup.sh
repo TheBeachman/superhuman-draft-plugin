@@ -3,6 +3,14 @@
 # Installs the superhuman-cli binary and authenticates with Superhuman
 set -e
 
+# ── 0. Architecture check ────────────────────────────────────────────────────
+if [ "$(uname -m)" != "arm64" ]; then
+  echo "❌ This plugin currently ships an ARM64-only binary."
+  echo "   Intel Mac support requires building superhuman-cli from source."
+  echo "   See: https://github.com/edwinhu/superhuman-cli"
+  exit 1
+fi
+
 BINARY_URL="https://github.com/edwinhu/superhuman-cli/raw/main/superhuman-arm64"
 BINARY_PATH="$HOME/.bun/bin/superhuman"
 EXPECTED_SHA256="9bbe1fc9a9bced524b712b6a9d5a3de7cf13c65142c4bc7557e2092090b1d344"
@@ -31,7 +39,15 @@ curl -fsSL -o "$BINARY_PATH" "$BINARY_URL"
 chmod +x "$BINARY_PATH"
 echo "✅ Binary installed at $BINARY_PATH"
 
-# ── 3. Verify SHA-256 checksum ───────────────────────────────────────────────
+# ── 3. Install superhuman-draft wrapper script ───────────────────────────────
+WRAPPER_PATH="$HOME/.bun/bin/superhuman-draft"
+echo ""
+echo "📥 Installing superhuman-draft wrapper..."
+curl -fsSL -o "$WRAPPER_PATH" "https://raw.githubusercontent.com/TheBeachman/superhuman-draft-plugin/master/superhuman-draft.py"
+chmod +x "$WRAPPER_PATH"
+echo "✅ Wrapper installed at $WRAPPER_PATH"
+
+# ── 4. Verify SHA-256 checksum ───────────────────────────────────────────────
 echo ""
 echo "🔐 Verifying binary integrity..."
 ACTUAL_SHA256=$(shasum -a 256 "$BINARY_PATH" | awk '{print $1}')
