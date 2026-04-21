@@ -10,6 +10,12 @@ description: >
 You are composing an email draft in Superhuman using the `superhuman-draft` wrapper tool.
 Drafts land in the Superhuman drafts folder on all devices — NOT in Gmail drafts.
 
+## Rules
+
+- **Never write an email signature.** Superhuman automatically appends the user's signature on send. End the body at the sign-off (e.g. "Cheers,") and nothing more.
+- **Default to drafting, not sending.** Only send when the user explicitly says "send it" or "send now".
+- **Always use `superhuman-draft`** (not `superhuman`) for draft creation — it fixes a token bug in the underlying binary that causes attachments to silently fail.
+
 ## Step 1: Check Superhuman is running
 
 ```bash
@@ -24,7 +30,7 @@ Do NOT proceed if the status check fails.
 From the user's request, identify:
 - **to**: recipient email address (required)
 - **subject**: subject line (required)
-- **body**: email body — write in the user's voice based on their CLAUDE.md or memory context. If no voice context is available, write professionally and concisely.
+- **body**: email body — write in the user's voice based on their CLAUDE.md or memory context. If no voice context is available, write professionally and concisely. Do NOT include a signature.
 - **attach**: local file path(s) if any attachments are needed (optional)
 
 To find the user's Superhuman account email, run:
@@ -36,8 +42,15 @@ For files in Google Drive, the local synced path is typically: `~/Google Drive/M
 Use Glob or Bash `find` to locate a file if the exact path is unclear.
 Multiple attachments: use `--attach` once per file.
 
+To find a thread ID for replies (search by keywords):
+```bash
+superhuman search "<keywords>" --json
+# Returns JSON with "id" field — use that as the thread ID
+```
+
 ## Step 3: Create the draft
 
+**New draft:**
 ```bash
 superhuman-draft draft create \
   --account "ACCOUNT_EMAIL" \
@@ -47,8 +60,18 @@ superhuman-draft draft create \
   [--attach "/path/to/file.pdf"]
 ```
 
+**Reply draft:**
+```bash
+superhuman reply <thread-id> --body "BODY"
+# Omit --send to leave as draft; add --send to send immediately
+```
+
+**Reply-all draft:**
+```bash
+superhuman reply-all <thread-id> --body "BODY"
+```
+
 Replace placeholders with actual values. Use `--attach` only if there are attachments.
-`superhuman-draft` handles all attachment uploading correctly — use it instead of `superhuman` directly.
 
 ## Step 4: Confirm to the user
 
@@ -56,8 +79,6 @@ Report back:
 - Recipient and subject
 - Whether attachments were included and their filenames
 - That the draft is in Superhuman ready for review
-
-**Never send automatically** unless the user explicitly says "send it" or "send now".
 
 ## Examples
 
@@ -67,7 +88,9 @@ superhuman-draft draft create \
   --account "user@example.com" \
   --to "recipient@example.com" \
   --subject "Following up" \
-  --body "Hi John, great meeting you. Let me know if you have questions."
+  --body "Hi John, great meeting you. Let me know if you have questions.
+
+Cheers,"
 ```
 
 **Draft with attachment:**
@@ -76,7 +99,9 @@ superhuman-draft draft create \
   --account "user@example.com" \
   --to "jacqueline@example.com" \
   --subject "Your Employment Agreement" \
-  --body "Hi Jackie, please find your employment agreement attached!" \
+  --body "Hi Jackie, please find your employment agreement attached!
+
+Cheers," \
   --attach "/Users/username/Google Drive/My Drive/HR/jackie_agreement.pdf"
 ```
 
@@ -86,14 +111,16 @@ superhuman-draft draft create \
   --account "user@example.com" \
   --to "partner@example.com" \
   --subject "Beachman Docs" \
-  --body "See attached." \
+  --body "See attached.
+
+Cheers," \
   --attach "/path/to/file1.pdf" \
   --attach "/path/to/file2.pdf"
 ```
 
 ## Notes
 
-- Always use `superhuman-draft` (not `superhuman`) for draft creation — it fixes a token bug in the underlying binary that causes attachments to silently fail
-- `superhuman` can still be used directly for all other commands (inbox, search, read, etc.)
+- `superhuman` can still be used directly for all other commands (inbox, search, read, reply, etc.)
 - Tokens are cached at `~/.config/superhuman-cli/tokens.json` — run `superhuman account auth` if expired
 - Superhuman must be open and running with remote debugging enabled (port 9250)
+- If `reply` fails with "Could not get thread information", fall back to `superhuman-draft draft create` with `Re: <original subject>` and note to the user that it won't be threaded
